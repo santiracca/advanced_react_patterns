@@ -18,7 +18,20 @@ const useClapState = (initialState = INITIAL_STATE) => {
     }));
   }, [clapState.count, clapState.countTotal]);
 
-  return [clapState, updateClapState];
+  // props collection for 'click'
+  const togglerProps = {
+    handleClick: updateClapState,
+    "aria-pressed": clapState.isClicked,
+  };
+
+  // props collection from 'count'
+  const counterProps = {
+    count: clapState.count,
+    "aria-valuemax": MAXIMUM_USER_CLAP,
+    "aria-valuemin": 0,
+    "aria-valuenow": clapState.count,
+  };
+  return { clapState, updateClapState, togglerProps, counterProps };
 };
 
 export default useClapState;
