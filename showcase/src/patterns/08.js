@@ -67,11 +67,16 @@ const Usage = () => {
     animationTimeline.replay();
   }, [count]);
 
+  const handleClick = () => {
+    console.log("click");
+  };
+
   return (
     <ClapContainer
       data-refkey='clapRef'
       setRef={setRef}
       {...getTogglerProps({
+        onClick: handleClick,
         "aria-pressed": false,
       })}
     >

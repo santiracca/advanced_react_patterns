@@ -6,6 +6,10 @@ const INITIAL_STATE = {
   isClicked: false,
 };
 
+const callFnsInSequence = (...fns) => (...args) => {
+  fns.forEach((fn) => fn && fn(...args));
+};
+
 const useClapState = (initialState = INITIAL_STATE) => {
   const MAXIMUM_USER_CLAP = 50;
   const [clapState, setClapState] = useState(initialState);
@@ -19,19 +23,21 @@ const useClapState = (initialState = INITIAL_STATE) => {
   }, [clapState.count, clapState.countTotal]);
 
   // props collection for 'click'
-  const togglerProps = {
-    handleClick: updateClapState,
+  const getTogglerProps = ({ onClick, ...otherProps } = {}) => ({
+    handleClick: callFnsInSequence(updateClapState, onClick),
     "aria-pressed": clapState.isClicked,
-  };
+    ...otherProps,
+  });
 
   // props collection from 'count'
-  const counterProps = {
+  const getCounterProps = ({ ...otherProps }) => ({
     count: clapState.count,
     "aria-valuemax": MAXIMUM_USER_CLAP,
     "aria-valuemin": 0,
     "aria-valuenow": clapState.count,
-  };
-  return { clapState, updateClapState, togglerProps, counterProps };
+    ...otherProps,
+  });
+  return { clapState, updateClapState, getTogglerProps, getCounterProps };
 };
 
 export default useClapState;
