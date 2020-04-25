@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
+import usePrevious from "./getPrevious";
 
 const INITIAL_STATE = {
   count: 0,
@@ -29,6 +30,15 @@ const useClapState = (initialState = INITIAL_STATE) => {
     ...otherProps,
   });
 
+  const resetRef = useRef(0);
+  const prevCount = usePrevious(clapState.count);
+  const reset = useCallback(() => {
+    if (prevCount !== clapState.count) {
+      setClapState(initialState);
+      resetRef.current++;
+    }
+  }, [prevCount, clapState.count]);
+
   // props collection from 'count'
   const getCounterProps = ({ ...otherProps }) => ({
     count: clapState.count,
@@ -37,7 +47,14 @@ const useClapState = (initialState = INITIAL_STATE) => {
     "aria-valuenow": clapState.count,
     ...otherProps,
   });
-  return { clapState, updateClapState, getTogglerProps, getCounterProps };
+  return {
+    clapState,
+    updateClapState,
+    getTogglerProps,
+    getCounterProps,
+    reset,
+    resetDep: resetRef.current,
+  };
 };
 
 export default useClapState;
